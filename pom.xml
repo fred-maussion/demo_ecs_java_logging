@@ -138,6 +138,14 @@
       <artifactId>jakarta.xml.bind-api</artifactId>
     </dependency>
 
+    <!-- elastic -->
+    <dependency>
+        <groupId>co.elastic.logging</groupId>
+        <artifactId>logback-ecs-encoder</artifactId>
+        <version>1.6.0</version>
+    </dependency>
+    <!-- end of elastic -->
+
   </dependencies>
 
   <dependencyManagement>

@@ -1,0 +1,53 @@
+<!-- Spring Pet Clinic Logback Configuration File -->
+<configuration>
+  <!-- Define a property for the log file path -->
+  <property name="LOG_FILE" value="${LOG_FILE:-${LOG_PATH:-${LOG_TEMP:-${java.io.tmpdir:-/tmp}}}/spring.log}"/>
+
+  <!-- Define properties explicitly for Logback using Spring Properties -->
+  <springProperty name="SERVICE_NAME" source="SERVICE_NAME" defaultValue="elastic-petclinic"/>
+  <springProperty name="SERVICE_VERSION" source="SERVICE_VERSION" defaultValue="1.0.0"/>
+  <springProperty name="SERVICE_ENVIRONMENT" source="SERVICE_ENVIRONMENT" defaultValue="development"/>
+  <springProperty name="SERVICE_NODE_NAME" source="SERVICE_NODE_NAME" defaultValue="node-1"/>
+  <springProperty name="TEAM" source="TEAM" defaultValue="default-team"/>
+
+  <!-- Include Logback default configuration files -->
+  <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
+  <include resource="org/springframework/boot/logging/logback/console-appender.xml"/>
+  <include resource="org/springframework/boot/logging/logback/file-appender.xml"/>
+  <include resource="co/elastic/logging/logback/boot/ecs-console-appender.xml"/>
+  <include resource="co/elastic/logging/logback/boot/ecs-file-appender.xml"/>
+
+  <!-- Define an ECS File Appender with a unique filename -->
+  <appender name="ECS_JSON_FILE" class="ch.qos.logback.core.FileAppender">
+    <!-- Set the file path to include the log level and timestamp -->
+    <file>${LOG_FILE}.ecs.json</file>
+    <encoder class="co.elastic.logging.logback.EcsEncoder">
+      <!-- Add ECS-specific fields to the logs -->
+      <serviceName>${SERVICE_NAME}</serviceName>
+      <serviceVersion>${SERVICE_VERSION}</serviceVersion>
+      <serviceEnvironment>${SERVICE_ENVIRONMENT}</serviceEnvironment>
+      <serviceNodeName>${SERVICE_NODE_NAME}</serviceNodeName>
+      <includeMarkers>true</includeMarkers>
+      <stackTraceAsArray>false</stackTraceAsArray>
+      <!-- Add an additional fields -->
+      <additionalField>
+        <key>team</key>
+        <value>${TEAM}</value>
+      </additionalField>
+    </encoder>
+  </appender>
+
+  <!-- Set the root level to INFO and include all appenders -->
+  <root level="INFO">
+    <!-- Do not use ECS console appender, only log files -->
+    <appender-ref ref="ECS_JSON_CONSOLE"/>
+    <!--
+    Uncomment ECS  output to console
+    <appender-ref ref="ECS_JSON_FILE"/>
+    Uncomment standard output to console
+    <appender-ref ref="CONSOLE"/>
+    Uncomment standard output to file
+    <appender-ref ref="FILE"/> 
+    -->
+  </root>
+</configuration>
