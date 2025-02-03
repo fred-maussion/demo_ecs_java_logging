@@ -29,10 +29,19 @@ jobs:
       - name: Build with Maven Wrapper
         run: ./mvnw -B package -DskipTests
   
-      # Step 4: Upload the JAR as an artifact
-      - name: Upload JAR as GitHub Artifact
-        uses: actions/upload-artifact@v4
+      # Step 4: Extract Tag Name (for release name)
+      - name: Extract Tag Name
+        run: echo "TAG_NAME=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
+
+      # Step 5: Upload JAR to GitHub Releases
+      - name: Upload JAR to GitHub Release
+        uses: softprops/action-gh-release@v1
         with:
-          name: elastic-petclinic-jar
-          path: target/*.jar
-          retention-days: 7
+          files: target/*.jar
+          tag_name: ${{ env.TAG_NAME }}
+          name: Release ${{ env.TAG_NAME }}
+          body: "🚀 New release: ${{ env.TAG_NAME }}"
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
