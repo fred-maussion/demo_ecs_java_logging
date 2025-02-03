@@ -1,21 +1,19 @@
-# Spring PetClinic Sample Application [![Build Status](https://github.com/spring-projects/spring-petclinic/actions/workflows/maven-build.yml/badge.svg)](https://github.com/spring-projects/spring-petclinic/actions/workflows/maven-build.yml)
+# Summary
 
-[![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#https://github.com/spring-projects/spring-petclinic) [![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://github.com/codespaces/new?hide_repo_select=true&ref=main&repo=7517918)
-
-
-
+This a sample java application based on [Elastic Petclinic Fork](https://github.com/elastic/spring-petclinic2) to show ECS Java logging capacities. You can either clone this repository or use the [step by step](documentation/ecs-logging-setup.md) to reproduce this example.
 
 ## Understanding the Spring Petclinic application with a few diagrams
+
 <a href="https://speakerdeck.com/michaelisvy/spring-petclinic-sample-application">See the presentation here</a>
 
 ## Running petclinic locally
+
 Petclinic is a [Spring Boot](https://spring.io/guides/gs/spring-boot) application built using [Maven](https://spring.io/guides/gs/maven/) or [Gradle](https://spring.io/guides/gs/gradle/). You can build a jar file and run it from the command line (it should work just as well with Java 17 or newer):
 
-
-```
-git clone https://github.com/spring-projects/spring-petclinic.git
+```bash
+git clone https://github.com/fred-maussion/spring-petclinic2.git
 cd spring-petclinic
-./mvnw package
+./mvnw -B package -Dtest=\!PostgresIntegrationTests
 java -jar target/*.jar
 ```
 
@@ -25,7 +23,7 @@ You can then access petclinic at http://localhost:8080/
 
 Or you can run it from Maven directly using the Spring Boot Maven plugin. If you do this, it will pick up changes that you make in the project immediately (changes to Java source files require a compile as well - most people use an IDE for this):
 
-```
+```bash
 ./mvnw spring-boot:run
 ```
 
@@ -33,33 +31,35 @@ Or you can run it from Maven directly using the Spring Boot Maven plugin. If you
 
 ## Building a Container
 
-There is no `Dockerfile` in this project. You can build a container image (if you have a docker daemon) using the Spring Boot build plugin:
+There is a `Dockerfile` in this project. You can build a container image (if you have a docker daemon) using the Spring Boot build plugin:
 
+```bash
+docker build -t petclinic:latest .
 ```
-./mvnw spring-boot:build-image
+
+and then run :
+
+```bash
+docker run -ti -p 8080:8080 petclinic  
 ```
-
-## In case you find a bug/suggested improvement for Spring Petclinic
-Our issue tracker is available [here](https://github.com/spring-projects/spring-petclinic/issues)
-
 
 ## Database configuration
 
 In its default configuration, Petclinic uses an in-memory database (H2) which
 gets populated at startup with data. The h2 console is exposed at `http://localhost:8080/h2-console`,
 and it is possible to inspect the content of the database using the `jdbc:h2:mem:testdb` url.
- 
+
 A similar setup is provided for MySQL and PostgreSQL if a persistent database configuration is needed. Note that whenever the database type changes, the app needs to run with a different profile: `spring.profiles.active=mysql` for MySQL or `spring.profiles.active=postgres` for PostgreSQL.
 
 You can start MySQL or PostgreSQL locally with whatever installer works for your OS or use docker:
 
-```
+```bash
 docker run -e MYSQL_USER=petclinic -e MYSQL_PASSWORD=petclinic -e MYSQL_ROOT_PASSWORD=root -e MYSQL_DATABASE=petclinic -p 3306:3306 mysql:8.0
 ```
 
 or
 
-```
+```bash
 docker run -e POSTGRES_USER=petclinic -e POSTGRES_PASSWORD=petclinic -e POSTGRES_DB=petclinic -p 5432:5432 postgres:15.2
 ```
 
@@ -68,14 +68,14 @@ and for [PostgreSQL](https://github.com/spring-projects/spring-petclinic/blob/ma
 
 Instead of vanilla `docker` you can also use the provided `docker-compose.yml` file to start the database containers. Each one has a profile just like the Spring profile:
 
-```
-$ docker-compose --profile mysql up
+```bash
+docker compose --profile mysql up
 ```
 
 or
 
-```
-$ docker-compose --profile postgres up
+```bash
+docker compose --profile postgres up
 ```
 
 ## Test Applications
@@ -89,6 +89,7 @@ There is a `petclinic.css` in `src/main/resources/static/resources/css`. It was 
 ## Working with Petclinic in your IDE
 
 ### Prerequisites
+
 The following items should be installed in your system:
 * Java 17 or newer (full JDK, not a JRE).
 * [git command line tool](https://help.github.com/articles/set-up-git)
@@ -102,11 +103,14 @@ The following items should be installed in your system:
 ### Steps:
 
 1) On the command line run:
-    ```
+
+    ```bash
     git clone https://github.com/spring-projects/spring-petclinic.git
     ```
+
 2) Inside Eclipse or STS:
-    ```
+
+    ```bash
     File -> Import -> Maven -> Existing Maven project
     ```
 
@@ -151,14 +155,13 @@ Here is a list of them:
 | Bean Validation / Hibernate Validator: simplify Maven dependencies and backward compatibility |[HV-790](https://hibernate.atlassian.net/browse/HV-790) and [HV-792](https://hibernate.atlassian.net/browse/HV-792) |
 | Spring Data: provide more flexibility when working with JPQL queries | [DATAJPA-292](https://jira.springsource.org/browse/DATAJPA-292) |
 
-
-# Contributing
+## Contributing
 
 The [issue tracker](https://github.com/spring-projects/spring-petclinic/issues) is the preferred channel for bug reports, features requests and submitting pull requests.
 
 For pull requests, editor preferences are available in the [editor config](.editorconfig) for easy use in common text editors. Read more and download plugins at <https://editorconfig.org>. If you have not previously done so, please fill out and submit the [Contributor License Agreement](https://cla.pivotal.io/sign/spring).
 
-# License
+## License
 
 The Spring PetClinic sample application is released under version 2.0 of the [Apache License](https://www.apache.org/licenses/LICENSE-2.0).
 
