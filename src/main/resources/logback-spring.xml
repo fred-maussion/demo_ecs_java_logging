@@ -37,10 +37,30 @@
     </encoder>
   </appender>
 
+  <!-- Define an ECS File Appender with a unique filename -->
+  <appender name="ECS_JSON_CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+    <!-- Set the file path to include the log level and timestamp -->
+    <encoder class="co.elastic.logging.logback.EcsEncoder">
+      <!-- Add ECS-specific fields to the logs -->
+      <serviceName>${SERVICE_NAME}</serviceName>
+      <serviceVersion>${SERVICE_VERSION}</serviceVersion>
+      <serviceEnvironment>${SERVICE_ENVIRONMENT}</serviceEnvironment>
+      <serviceNodeName>${SERVICE_NODE_NAME}</serviceNodeName>
+      <includeMarkers>true</includeMarkers>
+      <stackTraceAsArray>false</stackTraceAsArray>
+      <!-- Add an additional fields -->
+      <additionalField>
+        <key>team</key>
+        <value>${TEAM}</value>
+      </additionalField>
+    </encoder>
+  </appender>
+
   <!-- Set the root level to INFO and include all appenders -->
   <root level="INFO">
     <!-- Do not use ECS console appender, only log files -->
     <appender-ref ref="ECS_JSON_CONSOLE"/>
+    <appender-ref ref="ECS_JSON_FILE"/>
     <!--
     Uncomment ECS  output to console
     <appender-ref ref="ECS_JSON_FILE"/>
@@ -49,5 +69,6 @@
     Uncomment standard output to file
     <appender-ref ref="FILE"/> 
     -->
+    <!-- <appender-ref ref="CONSOLE"/> -->
   </root>
 </configuration>
